@@ -14,13 +14,17 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-//import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+// import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+// import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+// import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
@@ -47,6 +51,7 @@ public class SwerveModule {
     private PIDController driveVelocityController = new PIDController(Constants.SWERVE_DRIVE_P_VELOCITY, Constants.SWERVE_DRIVE_I_VELOCITY, Constants.SWERVE_DRIVE_D_VELOCITY);
     private TalonFX driveMotor;
     private TalonFX rotationMotor;
+    private SparkMaxConfig motorConfig;
 
     // The rotateAbsSensor is an absolute position sensor ranging from -180 to 180,
     // We'll use it to tell where we are and where we want to be, but due to the
@@ -67,14 +72,19 @@ public class SwerveModule {
         
         //contruct and setup drive falcon
         driveMotor = new TalonFX(driveMotorID);
-        driveMotor.configFactoryDefault();
-        // use the integrated sensor with the primary closed loop and timeout is 0.
-        driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        driveMotor.configSelectedFeedbackCoefficient(Constants.DRIVE_ENC_TO_METERS_FACTOR);//Constants.DRIVE_ENC_TO_METERS_FACTOR);
+        // driveMotor.configFactoryDefault();
+        motorConfig = new SparkMaxConfig();
+        motorConfig.encoder.positionConversionFactor(driveMotorID).velocityConversionFactor(Constants.DRIVE_ENC_TO_METERS_FACTOR);
+        
         // above uses configSelectedFeedbackCoefficient(), to scale the
         // driveMotor to real distance, DRIVE_ENC_TO_METERS_FACTOR
-        driveMotor.setNeutralMode(NeutralMode.Brake);
+        // driveMotor.setNeutralMode(NeutralMode.Brake);
+        motorConfig.idleMode(IdleMode.kBrake);
         driveMotor.setInverted(isInverted);// Set motor inverted(set to false)
+
+        motorConfig.closedLoop.feedbackSensor(TalonSRXFeedbackDevice.CTRE_MagEncoder_Absolute)
+        )
+
         driveMotor.enableVoltageCompensation(true);
         driveMotor.configVoltageCompSaturation(Constants.MAXIMUM_VOLTAGE);
         setDriveMotorPIDF(Constants.SWERVE_DRIVE_P_VALUE, Constants.SWERVE_DRIVE_I_VALUE,

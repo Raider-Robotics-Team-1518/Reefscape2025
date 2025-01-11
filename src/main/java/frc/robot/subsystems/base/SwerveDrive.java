@@ -22,8 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.config.RobotConfig;
+// import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+// import com.pathplanner.lib.util.ReplanningConfig;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.swervelib.SwerveModule;
@@ -556,24 +557,24 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void setupPathPlanner() {
-    AutoBuilder.configureHolonomic(
-      this::getCurPose2d, 
-      this::resetOdometry, 
-      this::getChassisSpeeds, 
-      this::setChassisSpeeds, 
-      new HolonomicPathFollowerConfig(
-        Constants.AutoConstants.TRANSLATION_PID,
-        Constants.AutoConstants.ANGLE_PID,
-        2.5, // max module speed in m/s
-        Constants.SwerveModulePosition.DRIVE_BASE_RADIUS, // in meters from center to furthest module
-        new ReplanningConfig()
-      ), 
-      // Boolean supplier that controls when the path will be mirrored for red alliance
-      () -> {
-        var alliance = DriverStation.getAlliance();
-        return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-      }
-      , this);
+    // AutoBuilder.configure(
+    //   this::getCurPose2d, 
+    //   this::resetOdometry, 
+    //   this::getChassisSpeeds, 
+    //   this::setChassisSpeeds, 
+    //   new HolonomicPathFollowerConfig(
+    //     Constants.AutoConstants.TRANSLATION_PID,
+    //     Constants.AutoConstants.ANGLE_PID,
+    //     2.5, // max module speed in m/s
+    //     Constants.SwerveModulePosition.DRIVE_BASE_RADIUS, // in meters from center to furthest module
+    //     new ReplanningConfig()
+    //   ), 
+    //   // Boolean supplier that controls when the path will be mirrored for red alliance
+    //   () -> {
+    //     var alliance = DriverStation.getAlliance();
+    //     return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
+    //   }
+    //   , this);
   }
 
 }

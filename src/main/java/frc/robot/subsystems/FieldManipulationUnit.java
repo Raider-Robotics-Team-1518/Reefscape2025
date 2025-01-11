@@ -14,12 +14,15 @@ import edu.wpi.first.wpilibj.util.Color;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+// import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+// import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
-import com.revrobotics.EncoderType;
-import com.revrobotics.CANSparkMax.IdleMode;
-
+import com.revrobotics.AbsoluteEncoder;
+//import com.revrobotics.EncoderType;
+// import com.revrobotics.CANSparkMax.IdleMode;
+// com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.Constants;
 import frc.robot.Utils;
 
@@ -31,9 +34,9 @@ public class FieldManipulationUnit extends SubsystemBase {
   // private CANSparkMax follow_shooter_motor;
   private TalonFX lead_shooter_motor;
   private TalonFX follow_shooter_motor;
-  private CANSparkMax lead_intake_motor;
-  private CANSparkMax follow_intake_motor;
-  private CANSparkMax climb_motor;
+  private SparkMax lead_intake_motor;
+  private SparkMax follow_intake_motor;
+  private SparkMax climb_motor;
   private TalonFX lead_arm_motor;
   private TalonFX follow_arm_motor;
   private DutyCycleEncoder arm_position;
@@ -54,9 +57,10 @@ public class FieldManipulationUnit extends SubsystemBase {
     // follow_shooter_motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     //follow_shooter_motor.follow(lead_shooter_motor); // Removed to set differential speeds
 
-    lead_intake_motor = new CANSparkMax(Constants.LEAD_INTAKE_MOTOR, MotorType.kBrushless);
-    follow_intake_motor = new CANSparkMax(Constants.FOLLOW_INTAKE_MOTOR, MotorType.kBrushless);
-    follow_intake_motor.follow(lead_intake_motor);
+    lead_intake_motor = new SparkMax(Constants.LEAD_INTAKE_MOTOR, MotorType.kBrushless);
+    follow_intake_motor = new SparkMax(Constants.FOLLOW_INTAKE_MOTOR, MotorType.kBrushless);
+    // follow_intake_motor.follow(lead_intake_motor);
+    follow_intake_motor.isFollower();
 
     lead_arm_motor = new TalonFX(Constants.LEAD_ARM_MOTOR);
     lead_arm_motor.setInverted(true);
@@ -65,10 +69,11 @@ public class FieldManipulationUnit extends SubsystemBase {
     follow_arm_motor.setControl(new StaticBrake());
     follow_arm_motor.setControl(new Follower(Constants.LEAD_ARM_MOTOR, true));
     arm_position = new DutyCycleEncoder(5);
-    arm_position.setDistancePerRotation(1.0d);
+    // arm_position.setDistancePerRotation(1.0d);
+    
 
-    climb_motor = new CANSparkMax(Constants.CLIMB_MOTOR, MotorType.kBrushless);
-    climb_motor.setIdleMode(IdleMode.kBrake);
+    climb_motor = new SparkMax(Constants.CLIMB_MOTOR, MotorType.kBrushless);
+    
     override_note_is_loaded = false;
 
   }
@@ -135,7 +140,8 @@ public class FieldManipulationUnit extends SubsystemBase {
   }
 
   public double get_arm_position(){
-    return arm_position.getAbsolutePosition() * 360;
+   // return arm_position.getAbsolutePosition() * 360;
+  return 0;
   }
 
   public boolean isFinished() {
