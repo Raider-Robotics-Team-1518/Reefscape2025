@@ -1,0 +1,76 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.3813806186170927,
+        "y": 4.095403506122328
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6972725837343565,
+        "y": 4.141627021992783
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.8837387044143455,
+        "y": 4.529904555304607
+      },
+      "prevControl": {
+        "x": 1.3182397535966242,
+        "y": 3.9474882553368715
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Aim and shoot",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "AutoAimArm"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "AutoShootSpeaker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 0.5,
+    "maxAngularVelocity": 90.0,
+    "maxAngularAcceleration": 15.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.93141717813761,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
