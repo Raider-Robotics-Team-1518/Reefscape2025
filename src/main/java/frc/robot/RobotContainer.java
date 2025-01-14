@@ -140,7 +140,6 @@ public class RobotContainer {
    */
   private void configureAutoModes() {
     // Build an auto chooser. This will use Commands.none() as the default option.
-    swerveDrive.setupPathPlanner();
     autoChooser = AutoBuilder.buildAutoChooser();
     // autoChooser.addOption("AutoSpeaker1", new AutoSpeaker1());
     SmartDashboard.putData("Auto Chooser", autoChooser);

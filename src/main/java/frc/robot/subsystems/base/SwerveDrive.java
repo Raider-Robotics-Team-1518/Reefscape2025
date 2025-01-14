@@ -22,9 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-// import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-// import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.swervelib.SwerveModule;
@@ -67,6 +67,18 @@ public class SwerveDrive extends SubsystemBase {
   
   /** Creates a new SwerveDrive. */
   public SwerveDrive() {
+
+        // Load the RobotConfig from the GUI settings. You should probably
+    // store this in your Constants file
+  RobotConfig config = null;
+
+  try {
+    config = RobotConfig.fromGUISettings();
+  } catch (Exception e) {
+    // Handle exception as needed
+    e.printStackTrace();
+  }
+
     // Constructs the swerve modules 
     frontLeft = new SwerveModule(Constants.FRONT_LEFT_MOVE_MOTOR, Constants.FRONT_LEFT_ROTATE_MOTOR, Constants.FRONT_LEFT_ROTATE_SENSOR, false);
     rearLeft = new SwerveModule(Constants.REAR_LEFT_MOVE_MOTOR, Constants.REAR_LEFT_ROTATE_MOTOR, Constants.REAR_LEFT_ROTATE_SENSOR, false);
@@ -101,6 +113,32 @@ public class SwerveDrive extends SubsystemBase {
     robotCounterSpinController.setTolerance(Constants.ROBOT_SPIN_PID_TOLERANCE);
 
     hasPoseBeenSet = false;
+
+    // Configure AutoBuilder last
+    AutoBuilder.configure(
+            this::getCurPose2d, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> driveRobotCentric(speeds, false, false), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                    Constants.AutoConstants.TRANSLATION_PID, // Translation PID constants
+                    Constants.AutoConstants.ANGLE_PID // Rotation PID constants
+            ),
+            config, // The robot configuration
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+    );
+
 
   }
 
@@ -554,27 +592,6 @@ public class SwerveDrive extends SubsystemBase {
   public double getCounterRotationPIDOut(double target){
     double currentGyroPos = getGyroInRad();
     return robotCounterSpinController.calculate(currentGyroPos, target);
-  }
-
-  public void setupPathPlanner() {
-    // AutoBuilder.configure(
-    //   this::getCurPose2d, 
-    //   this::resetOdometry, 
-    //   this::getChassisSpeeds, 
-    //   this::setChassisSpeeds, 
-    //   new HolonomicPathFollowerConfig(
-    //     Constants.AutoConstants.TRANSLATION_PID,
-    //     Constants.AutoConstants.ANGLE_PID,
-    //     2.5, // max module speed in m/s
-    //     Constants.SwerveModulePosition.DRIVE_BASE_RADIUS, // in meters from center to furthest module
-    //     new ReplanningConfig()
-    //   ), 
-    //   // Boolean supplier that controls when the path will be mirrored for red alliance
-    //   () -> {
-    //     var alliance = DriverStation.getAlliance();
-    //     return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-    //   }
-    //   , this);
   }
 
 }
